@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Kiểm Tra Toán Lớp 2 - Tuần 17</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Confetti JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cuteYellow: '#FEF08A',
+                        cuteOrange: '#FB923C',
+                        cuteBlue: '#38BDF8',
+                        cuteMint: '#4ADE80',
+                        cutePink: '#F472B6',
+                        cutePurple: '#C084FC',
+                        cuteCream: '#FFFBEB',
+                        cuteDark: '#1E293B',
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'wiggle': 'wiggle 0.5s ease-in-out',
+                        'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'shake': 'shake 0.4s ease-in-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.8)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-6px)' },
+                            '75%': { transform: 'translateX(6px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #FEF3C7;
+            background-image: radial-gradient(#FDE68A 2px, transparent 2px), radial-gradient(#FDE68A 2px, #FEF3C7 2px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            touch-action: manipulation;
+        }
+        .title-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .retro-shadow {
+            box-shadow: 4px 4px 0px #1E293B;
+        }
+        .retro-shadow-sm {
+            box-shadow: 2px 2px 0px #1E293B;
+        }
+        .retro-button {
+            transition: all 0.1s ease;
+        }
+        .retro-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #1E293B;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-cuteDark flex flex-col justify-between selection:bg-cutePink selection:text-white">
+
+    <header class="w-full bg-white border-b-4 border-cuteDark py-4 px-6 shadow-md relative z-10">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div id="header-mascot" class="w-12 h-12 bg-cutePink rounded-2xl border-3 border-cuteDark flex items-center justify-center text-2xl animate-bounce shadow-[3px_3px_0px_#1E293B]">
+                    🐱
+                </div>
+                <div>
+                    <h1 class="title-font text-2xl sm:text-3xl text-cuteOrange tracking-wide drop-shadow-sm">
+                        🌈 BÀI KIỂM TRA TOÁN – TUẦN 17 🌈
+                    </h1>
+                    <p class="text-sm font-semibold text-slate-600">Cùng cố gắng hoàn thành thật tốt nhé!</p>
+                </div>
+            </div>
+            <div id="stats-bar" class="flex items-center gap-2 sm:gap-3 hidden">
+                <div class="bg-cuteYellow px-3 sm:px-4 py-2 rounded-xl border-2 border-cuteDark font-bold text-xs sm:text-sm retro-shadow-sm flex items-center gap-1">
+                    <span>⭐</span> Điểm: <span id="score-display" class="transition-transform duration-300 inline-block">0</span>/10
+                </div>
+                <div class="bg-cuteMint px-3 sm:px-4 py-2 rounded-xl border-2 border-cuteDark font-bold text-xs sm:text-sm retro-shadow-sm flex items-center gap-1">
+                    <span>🌟</span> Sao: <span id="star-display">0</span>
+                </div>
+                <div class="bg-cuteBlue text-white px-3 sm:px-4 py-2 rounded-xl border-2 border-cuteDark font-bold text-xs sm:text-sm retro-shadow-sm">
+                    Câu <span id="current-q-num">1</span>/10
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 relative">
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="w-full max-w-xl bg-white border-4 border-cuteDark rounded-3xl p-6 sm:p-8 text-center retro-shadow animate-pop relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-cuteYellow rounded-full border-4 border-cuteDark opacity-35 pointer-events-none"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-cutePink rounded-full border-4 border-cuteDark opacity-35 pointer-events-none"></div>
+
+            <div class="text-6xl mb-4 animate-bounce">🐱‍💻✨</div>
+            <h2 class="title-font text-3xl sm:text-4xl text-cuteDark mb-3">🎮 SẴN SÀNG CHƯA?</h2>
+            <p class="title-font text-xl text-cuteOrange mb-3">BÀI KIỂM TRA TOÁN – TUẦN 17</p>
+            <p class="text-slate-600 text-base sm:text-lg mb-6 font-medium">
+                10 câu hỏi thú vị về cộng trừ phạm vi 20 & 100, giải toán có lời văn, so sánh, điểm thẳng hàng, nối cột bằng đường line và điền số!
+            </p>
+
+            <div class="bg-cuteCream border-2 border-dashed border-cuteOrange rounded-2xl p-4 mb-6 text-left">
+                <h3 class="title-font text-cuteOrange text-lg mb-2 flex items-center gap-2">
+                    <span>💡</span> Hướng dẫn làm bài:
+                </h3>
+                <ul class="text-sm space-y-1 text-slate-700 font-semibold list-disc list-inside">
+                    <li>Chọn đáp án đúng, hệ thống sẽ tự động kiểm tra ngay lập tức!</li>
+                    <li>Trả lời đúng sẽ tự động chuyển sang câu tiếp theo sau 1.2 giây.</li>
+                    <li>Câu 8 hỗ trợ nối cột bằng đường line kéo hoặc chạm cực dễ dàng!</li>
+                </ul>
+            </div>
+
+            <button onclick="startQuiz()" class="w-full sm:w-auto bg-cuteMint hover:bg-emerald-400 text-cuteDark title-font text-xl py-4 px-8 rounded-2xl border-4 border-cuteDark retro-button retro-shadow flex items-center justify-center gap-3 mx-auto">
+                <span>🚀 BẮT ĐẦU NGAY</span>
+            </button>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="w-full max-w-2xl bg-white border-4 border-cuteDark rounded-3xl p-5 sm:p-8 retro-shadow hidden animate-pop relative">
+            
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-sm font-bold mb-1">
+                    <span id="progress-text">Tiến trình: 1/10 câu</span>
+                    <span id="progress-percent">10%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-4 rounded-full border-2 border-cuteDark overflow-hidden">
+                    <div id="progress-bar-fill" class="bg-cutePink h-full transition-all duration-300 rounded-full" style="width: 10%;"></div>
+                </div>
+            </div>
+
+            <!-- Mascot & Feedback Header -->
+            <div class="flex items-center gap-3 bg-cuteCream border-2 border-cuteDark rounded-2xl p-3 mb-6">
+                <div id="mascot-avatar" class="text-3xl bg-white w-12 h-12 rounded-xl border-2 border-cuteDark flex items-center justify-center flex-shrink-0 animate-pulse">
+                    🐱
+                </div>
+                <div class="flex-grow">
+                    <div id="mascot-speech" class="font-bold text-sm sm:text-base text-slate-800">
+                        Chào bạn! Hãy chọn đáp án chính xác nhé! ⭐
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Card Box -->
+            <div class="mb-6">
+                <div class="inline-block bg-cuteYellow px-3 py-1 rounded-lg border-2 border-cuteDark font-bold text-sm mb-3 retro-shadow-sm" id="question-badge">
+                    CÂU 1
+                </div>
+                <h3 id="question-title" class="title-font text-xl sm:text-2xl text-cuteDark leading-snug">
+                    <!-- Question text injected here -->
+                </h3>
+            </div>
+
+            <!-- Dynamic Answer Area -->
+            <div id="answer-area" class="mb-2">
+                <!-- Dynamic options/inputs/matching area injected here -->
+            </div>
+        </div>
+
+        <!-- Success Popup Overlay -->
+        <div id="success-popup" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white border-4 border-cuteDark rounded-3xl p-6 max-w-sm w-full retro-shadow text-center animate-pop">
+                <div class="text-5xl mb-2 animate-bounce">🎉⭐</div>
+                <h3 class="title-font text-2xl text-cuteOrange mb-1">TUYỆT VỜI!</h3>
+                <p id="success-msg" class="text-slate-700 font-bold text-base mb-2">Em trả lời đúng rồi! (+1 điểm)</p>
+                <div class="text-xs text-slate-500 font-semibold">Tự động chuyển câu sau 1.2 giây...</div>
+            </div>
+        </div>
+
+        <!-- Wrong Feedback Toast -->
+        <div id="wrong-toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-cutePink text-white font-bold px-6 py-3 rounded-2xl border-3 border-cuteDark retro-shadow z-50 hidden animate-shake flex items-center gap-2 text-base">
+            <span>💡</span> <span>Chưa đúng rồi! Em thử lại nhé!</span>
+        </div>
+
+        <!-- Result Modal -->
+        <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white border-4 border-cuteDark rounded-3xl p-6 sm:p-8 max-w-lg w-full retro-shadow text-center animate-pop relative overflow-hidden">
+                <div class="absolute -top-12 -right-12 w-36 h-36 bg-cuteYellow rounded-full border-4 border-cuteDark opacity-30 pointer-events-none"></div>
+                
+                <div class="text-6xl mb-3 animate-bounce">🎉🏆</div>
+                <h2 class="title-font text-2xl sm:text-3xl text-cuteOrange mb-2">HOÀN THÀNH BÀI KIỂM TRA!</h2>
+                <p id="result-feedback-msg" class="text-slate-700 font-bold text-lg mb-4"></p>
+
+                <div class="bg-cuteCream border-3 border-cuteDark rounded-2xl p-4 mb-6">
+                    <div class="text-sm font-semibold text-slate-600 mb-1">Kết quả của em:</div>
+                    <div class="title-font text-3xl text-cuteDark mb-2">
+                        ⭐ <span id="final-score-num">0</span> / 10 Điểm
+                    </div>
+                    <div id="star-rating" class="text-2xl text-amber-400 tracking-wider">
+                        ⭐⭐⭐⭐⭐
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="restartQuiz()" class="bg-cutePink hover:bg-pink-400 text-white title-font text-base py-3 px-6 rounded-xl border-3 border-cuteDark retro-button retro-shadow flex items-center justify-center gap-2">
+                        <span>🔄 LÀM LẠI BÀI</span>
+                    </button>
+                    <button onclick="reviewAnswers()" class="bg-cuteYellow hover:bg-amber-300 text-cuteDark title-font text-base py-3 px-6 rounded-xl border-3 border-cuteDark retro-button retro-shadow flex items-center justify-center gap-2">
+                        <span>📖 XEM LẠI BÀI</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full bg-white border-t-4 border-cuteDark py-3 px-6 text-center text-sm font-bold text-slate-600 z-10">
+        🌟 Cố gắng mỗi ngày – Tiến bộ mỗi ngày! 🌟 📚 ✏️ 🌈
+    </footer>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                type: "multiple-choice",
+                badge: "CÂU 1",
+                question: "5 đếm thêm 9 đơn vị được mấy?",
+                options: ["16", "13", "14"],
+                answer: "14",
+                points: 1
+            },
+            {
+                id: 2,
+                type: "multiple-choice",
+                badge: "CÂU 2",
+                question: "Trong giỏ có 13 quả trứng gà và 17 quả trứng vịt. Có tất cả số quả trứng trong giỏ là:",
+                hasImage: true,
+                imageType: "eggs",
+                options: ["20 quả trứng", "23 quả trứng", "30 quả trứng"],
+                answer: "30 quả trứng",
+                points: 1
+            },
+            {
+                id: 3,
+                type: "multiple-choice",
+                badge: "CÂU 3",
+                question: "So sánh: 22 cm + 18 cm ..... 45 cm",
+                options: [">", "<", "="],
+                answer: "<",
+                points: 1
+            },
+            {
+                id: 4,
+                type: "multiple-choice",
+                badge: "CÂU 4",
+                question: "Ban đầu, vườn nhà Hòa có 12 cây cam. Sau khi bố trồng thêm một số cây cam thì bây giờ vườn nhà Hòa có 21 cây cam. Số cây cam mà bố Hòa đã trồng thêm trong vườn là:",
+                hasImage: true,
+                imageType: "trees",
+                options: ["9 cây", "8 cây", "7 cây"],
+                answer: "9 cây",
+                points: 1
+            },
+            {
+                id: 5,
+                type: "multiple-choice",
+                badge: "CÂU 5",
+                question: "Trong giỏ có 4 chục quả trứng gà, bà Sáu đã bán đi 12 quả trứng gà. Số quả trứng gà còn lại trong giỏ là:",
+                options: ["28 quả trứng", "27 quả trứng", "38 quả trứng"],
+                answer: "28 quả trứng",
+                points: 1
+            },
+            {
+                id: 6,
+                type: "multiple-choice",
+                badge: "CÂU 6",
+                question: "Kết quả của phép tính 11 - 9 = ... là:",
+                options: ["3", "2", "9"],
+                answer: "2",
+                points: 1
+            },
+            {
+                id: 7,
+                type: "multiple-choice",
+                badge: "CÂU 7",
+                question: "Trong hình sau có ba điểm nào thẳng hàng?",
+                hasImage: true,
+                imageType: "geometry",
+                options: ["3 điểm A, O, B", "3 điểm A, O, M", "3 điểm A, B, M"],
+                answer: "3 điểm A, B, M",
+                points: 1
+            },
+            {
+                id: 8,
+                type: "matching",
+                badge: "CÂU 8",
+                question: "Nối phép tính ở Cột A với kết quả thích hợp ở Cột B bằng đường line:",
+                pairs: [
+                    { left: "Tổng của 25 và 15", right: "40" },
+                    { left: "Hiệu của 63 và 45", right: "18" },
+                    { left: "Hiệu của 82 và 70", right: "12" }
+                ],
+                points: 1
+            },
+            {
+                id: 9,
+                type: "multiple-choice",
+                badge: "CÂU 9",
+                question: "Một tổ công nhân ngày thứ nhất làm được 41 sản phẩm, ngày thứ hai làm được nhiều hơn ngày thứ nhất 12 sản phẩm. Số sản phẩm tổ đó làm được ngày thứ hai là:",
+                options: ["54 sản phẩm", "43 sản phẩm", "63 sản phẩm", "53 sản phẩm"],
+                answer: "53 sản phẩm",
+                points: 1
+            },
+            {
+                id: 10,
+                type: "fill",
+                badge: "CÂU 10",
+                question: "Tính tổng của 9 và số liền trước nó. Nếu thêm vào tổng đó 7 đơn vị thì được số mới là số nào?",
+                fields: [
+                    { formula: "9 + <input class='w-16 p-1 text-center border-2 border-cuteDark rounded-lg font-bold' data-ans='8' /> = <input class='w-16 p-1 text-center border-2 border-cuteDark rounded-lg font-bold' data-ans='17' />" },
+                    { formula: "<input class='w-16 p-1 text-center border-2 border-cuteDark rounded-lg font-bold' data-ans='17' /> + 7 = <input class='w-16 p-1 text-center border-2 border-cuteDark rounded-lg font-bold' data-ans='24' />" }
+                ],
+                points: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let stars = 0;
+        let isLocked = false;
+
+        // Matching state for Question 8
+        let shuffledRightPairs = [];
+        let matchedPairsCount = 0;
+        let selectedLeftNode = null;
+        let activeConnections = {}; // leftIdx -> rightIdx
+        let tempConnection = null;
+
+        // Web Audio API sound generator
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(150, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            }
+        }
+
+        function startQuiz() {
+            playSound('click');
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('stats-bar').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isLocked = false;
+            const q = questions[currentQuestionIndex];
+            
+            // Update stats & progress
+            document.getElementById('score-display').textContent = score;
+            document.getElementById('star-display').textContent = stars;
+            document.getElementById('current-q-num').textContent = currentQuestionIndex + 1;
+            document.getElementById('progress-text').textContent = `Tiến trình: ${currentQuestionIndex + 1}/10 câu`;
+            const pct = ((currentQuestionIndex + 1) / 10) * 100;
+            document.getElementById('progress-bar-fill').style.width = pct + '%';
+            document.getElementById('progress-percent').textContent = Math.round(pct) + '%';
+
+            // Question header
+            document.getElementById('question-badge').textContent = q.badge;
+            document.getElementById('question-title').textContent = q.question;
+
+            updateMascot('welcome', 'Cùng suy nghĩ thật kỹ và chọn đáp án nhé! 🌟');
+
+            // Render Answer Area
+            const area = document.getElementById('answer-area');
+            area.innerHTML = '';
+
+            // Render image illustrations if applicable
+            if (q.hasImage) {
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'mb-4 bg-cuteCream p-3 rounded-2xl border-2 border-cuteDark flex flex-col items-center justify-center';
+                
+                if (q.imageType === 'eggs') {
+                    imgDiv.innerHTML = `
+                        <div class="text-xs font-bold text-slate-500 mb-2">Minh họa quả trứng:</div>
+                        <div class="flex gap-4 text-3xl">
+                            <span class="animate-bounce">🥚 13 quả gà</span>
+                            <span>+</span>
+                            <span class="animate-bounce" style="animation-delay: 0.2s">🥚 17 quả vịt</span>
+                        </div>
+                    `;
+                } else if (q.imageType === 'trees') {
+                    imgDiv.innerHTML = `
+                        <div class="text-xs font-bold text-slate-500 mb-2">Minh họa cây cam trong vườn:</div>
+                        <div class="flex gap-4 text-3xl">
+                            <span>🌳 12 cây đầu</span>
+                            <span>→</span>
+                            <span class="text-cuteOrange font-bold">🍊 21 cây tổng</span>
+                        </div>
+                    `;
+                } else if (q.imageType === 'geometry') {
+                    imgDiv.innerHTML = `
+                        <div class="text-xs font-bold text-slate-500 mb-2">Hình học (Ba điểm thẳng hàng):</div>
+                        <svg width="260" height="95" class="bg-white rounded-xl border-2 border-cuteDark">
+                            <line x1="30" y1="50" x2="230" y2="50" stroke="#38BDF8" stroke-width="4" stroke-dasharray="6,6" />
+                            <circle cx="50" cy="50" r="7" fill="#F472B6" stroke="#1E293B" stroke-width="3" />
+                            <text x="43" y="32" font-family="Fredoka" font-weight="bold" font-size="15" fill="#1E293B">A</text>
+                            <circle cx="130" cy="50" r="7" fill="#FB923C" stroke="#1E293B" stroke-width="3" />
+                            <text x="123" y="32" font-family="Fredoka" font-weight="bold" font-size="15" fill="#1E293B">B</text>
+                            <circle cx="210" cy="50" r="7" fill="#4ADE80" stroke="#1E293B" stroke-width="3" />
+                            <text x="203" y="32" font-family="Fredoka" font-weight="bold" font-size="15" fill="#1E293B">M</text>
+                            <circle cx="130" cy="20" r="5" fill="#C084FC" stroke="#1E293B" stroke-width="2" />
+                            <text x="140" y="22" font-family="Fredoka" font-weight="bold" font-size="13" fill="#1E293B">O</text>
+                        </svg>
+                    `;
+                }
+                area.appendChild(imgDiv);
+            }
+
+            if (q.type === 'multiple-choice') {
+                const optGrid = document.createElement('div');
+                optGrid.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-2';
+                
+                q.options.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    btn.className = `option-btn p-4 rounded-2xl border-3 border-cuteDark font-bold text-lg bg-white hover:bg-cuteYellow transition-all retro-shadow-sm text-center flex items-center justify-center`;
+                    btn.textContent = opt;
+                    btn.onclick = () => handleChoiceAnswer(opt, btn);
+                    optGrid.appendChild(btn);
+                });
+                area.appendChild(optGrid);
+
+            } else if (q.type === 'matching') {
+                matchedPairsCount = 0;
+                selectedLeftNode = null;
+                activeConnections = {};
+                
+                // Shuffle right side pairs for Q8
+                shuffledRightPairs = [...q.pairs].sort(() => Math.random() - 0.5);
+
+                const matchContainer = document.createElement('div');
+                matchContainer.className = 'bg-cuteCream p-4 rounded-2xl border-2 border-cuteDark relative select-none';
+                matchContainer.innerHTML = `
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b-2 border-cuteDark font-bold text-sm">
+                        <span class="text-cuteOrange">CỘT A (Phép tính)</span>
+                        <span id="match-status-text" class="bg-cuteYellow px-3 py-1 rounded-lg border border-cuteDark">Đã nối: 0 / 3</span>
+                        <span class="text-cuteBlue">CỘT B (Kết quả)</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-8 relative py-2" id="matching-grid-area">
+                        <div id="col-a-nodes" class="space-y-4"></div>
+                        <div id="col-b-nodes" class="space-y-4"></div>
+                        <svg id="connection-svg" class="absolute inset-0 w-full h-full pointer-events-none z-10"></svg>
+                    </div>
+                    <div class="mt-4 text-xs font-semibold text-slate-500 text-center">
+                        💡 Thao tác: Kéo từ chấm tròn Cột A sang chấm tròn Cột B, hoặc chạm vào 2 ô để nối!
+                    </div>
+                `;
+                area.appendChild(matchContainer);
+
+                setTimeout(() => renderMatchingNodes(q.pairs), 50);
+
+            } else if (q.type === 'fill') {
+                const fillBox = document.createElement('div');
+                fillBox.className = 'space-y-4 bg-cuteCream p-4 rounded-2xl border-2 border-cuteDark';
+                
+                q.fields.forEach((row) => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'flex items-center gap-3 text-lg font-bold flex-wrap';
+                    rowDiv.innerHTML = row.formula;
+                    fillBox.appendChild(rowDiv);
+                });
+                
+                area.appendChild(fillBox);
+
+                const checkBtn = document.createElement('button');
+                checkBtn.className = 'mt-4 w-full bg-cuteMint hover:bg-emerald-400 text-cuteDark title-font text-lg py-3 rounded-xl border-3 border-cuteDark retro-button retro-shadow flex items-center justify-center gap-2';
+                checkBtn.innerHTML = '✨ XÁC NHẬN ĐÁP ÁN';
+                checkBtn.onclick = () => {
+                    if (isLocked) return;
+                    const inputs = area.querySelectorAll('input');
+                    let allCorrect = true;
+                    inputs.forEach(input => {
+                        if (input.value.trim() !== input.getAttribute('data-ans')) {
+                            allCorrect = false;
+                        }
+                    });
+                    if (allCorrect) {
+                        isLocked = true;
+                        handleCorrectAnswer();
+                    } else {
+                        playSound('wrong');
+                        inputs.forEach(input => {
+                            if (input.value.trim() !== input.getAttribute('data-ans')) {
+                                input.classList.add('animate-shake', 'bg-pink-100');
+                                setTimeout(() => input.classList.remove('animate-shake', 'bg-pink-100'), 800);
+                            }
+                        });
+                        showWrongToast("Có ô số chưa đúng, em kiểm tra lại nhé!");
+                    }
+                };
+                area.appendChild(checkBtn);
+            }
+        }
+
+        // Render matching nodes for Question 8
+        function renderMatchingNodes(pairs) {
+            const colA = document.getElementById('col-a-nodes');
+            const colB = document.getElementById('col-b-nodes');
+            if (!colA || !colB) return;
+
+            colA.innerHTML = '';
+            colB.innerHTML = '';
+
+            pairs.forEach((pair, idx) => {
+                const nodeA = document.createElement('div');
+                nodeA.className = `p-3 bg-white rounded-xl border-2 border-cuteDark font-bold text-sm relative flex items-center justify-between cursor-pointer hover:bg-cuteYellow transition-all col-a-item-${idx}`;
+                nodeA.innerHTML = `
+                    <span>${pair.left}</span>
+                    <div class="w-6 h-6 bg-cutePink rounded-full border-2 border-cuteDark flex items-center justify-center absolute -right-3 top-1/2 -translate-y-1/2 cursor-pointer z-20 hover:scale-125 transition-transform connection-point-a" data-idx="${idx}">●</div>
+                `;
+                nodeA.onclick = (e) => {
+                    if (isLocked) return;
+                    // If clicked outside connection point, select for touch matching
+                    if (!e.target.classList.contains('connection-point-a')) {
+                        handleTouchNodeA(idx);
+                    }
+                };
+                colA.appendChild(nodeA);
+            });
+
+            shuffledRightPairs.forEach((pair, idx) => {
+                const nodeB = document.createElement('div');
+                nodeB.className = `p-3 bg-white rounded-xl border-2 border-cuteDark font-bold text-sm relative flex items-center justify-between cursor-pointer hover:bg-cuteMint transition-all col-b-item-${idx}`;
+                nodeB.innerHTML = `
+                    <div class="w-6 h-6 bg-cuteBlue rounded-full border-2 border-cuteDark flex items-center justify-center absolute -left-3 top-1/2 -translate-y-1/2 cursor-pointer z-20 hover:scale-125 transition-transform connection-point-b" data-idx="${idx}">●</div>
+                    <span class="ml-2">${pair.right}</span>
+                `;
+                nodeB.onclick = (e) => {
+                    if (isLocked) return;
+                    if (!e.target.classList.contains('connection-point-b')) {
+                        handleTouchNodeB(idx);
+                    }
+                };
+                colB.appendChild(nodeB);
+            });
+
+            setupPointerEventListeners();
+            redrawSVGConnections();
+        }
+
+        // Touch matching fallback for mobile/tablet
+        function handleTouchNodeA(idx) {
+            if (activeConnections[idx] !== undefined) return; // already connected
+            playSound('click');
+            selectedLeftNode = idx;
+            document.querySelectorAll('[class*="col-a-item-"]').forEach(el => el.classList.remove('bg-cuteYellow', 'ring-2', 'ring-cuteOrange'));
+            document.querySelector(`.col-a-item-${idx}`).classList.add('bg-cuteYellow', 'ring-2', 'ring-cuteOrange');
+            updateMascot('welcome', 'Bây giờ hãy bấm vào kết quả tương ứng ở Cột B nhé! 🎯');
+        }
+
+        function handleTouchNodeB(rightIdx) {
+            if (selectedLeftNode === null) {
+                showWrongToast("Hãy chọn phép tính ở Cột A trước nhé!");
+                return;
+            }
+            playSound('click');
+            evaluateConnection(selectedLeftNode, rightIdx);
+            selectedLeftNode = null;
+            document.querySelectorAll('[class*="col-a-item-"]').forEach(el => el.classList.remove('bg-cuteYellow', 'ring-2', 'ring-cuteOrange'));
+        }
+
+        // Pointer event listeners for Drag & Drop lines
+        function setupPointerEventListeners() {
+            const pointsA = document.querySelectorAll('.connection-point-a');
+            const svg = document.getElementById('connection-svg');
+            if (!svg) return;
+
+            pointsA.forEach(point => {
+                point.onpointerdown = (e) => {
+                    if (isLocked) return;
+                    e.stopPropagation();
+                    const leftIdx = parseInt(point.getAttribute('data-idx'));
+                    if (activeConnections[leftIdx] !== undefined) return;
+
+                    selectedLeftNode = leftIdx;
+                    playSound('click');
+
+                    const rect = point.getBoundingClientRect();
+                    const svgRect = svg.getBoundingClientRect();
+                    const startX = rect.left + rect.width / 2 - svgRect.left;
+                    const startY = rect.top + rect.height / 2 - svgRect.top;
+
+                    tempConnection = { startX, startY, currentX: startX, currentY: startY };
+
+                    const onPointerMove = (moveEvent) => {
+                        if (!tempConnection) return;
+                        tempConnection.currentX = moveEvent.clientX - svgRect.left;
+                        tempConnection.currentY = moveEvent.clientY - svgRect.top;
+                        redrawSVGConnections();
+                    };
+
+                    const onPointerUp = (upEvent) => {
+                        window.removeEventListener('pointermove', onPointerMove);
+                        window.removeEventListener('pointerup', onPointerUp);
+
+                        // Check if released over any connection point B
+                        const elements = document.elementsFromPoint(upEvent.clientX, upEvent.clientY);
+                        let targetBIdx = null;
+                        elements.forEach(el => {
+                            if (el.classList.contains('connection-point-b')) {
+                                targetBIdx = parseInt(el.getAttribute('data-idx'));
+                            }
+                        });
+
+                        tempConnection = null;
+                        if (targetBIdx !== null) {
+                            evaluateConnection(selectedLeftNode, targetBIdx);
+                        } else {
+                            redrawSVGConnections();
+                        }
+                        selectedLeftNode = null;
+                    };
+
+                    window.addEventListener('pointermove', onPointerMove);
+                    window.addEventListener('pointerup', onPointerUp);
+                };
+            });
+        }
+
+        function evaluateConnection(leftIdx, rightIdx) {
+            const q = questions[currentQuestionIndex];
+            const leftItem = q.pairs[leftIdx];
+            const rightItem = shuffledRightPairs[rightIdx];
+
+            if (leftItem.right === rightItem.right) {
+                // Correct match
+                playSound('correct');
+                activeConnections[leftIdx] = rightIdx;
+                matchedPairsCount++;
+
+                document.getElementById('match-status-text').textContent = `Đã nối: ${matchedPairsCount} / 3`;
+                
+                // Highlight connected items with checkmark
+                const nodeA = document.querySelector(`.col-a-item-${leftIdx}`);
+                const nodeB = document.querySelector(`.col-b-item-${rightIdx}`);
+                nodeA.classList.add('bg-cuteMint', 'border-emerald-500');
+                nodeA.innerHTML += `<span class="absolute right-2 top-1/2 -translate-y-1/2 text-emerald-600 font-extrabold">✓</span>`;
+                nodeB.classList.add('bg-cuteMint', 'border-emerald-500');
+                nodeB.innerHTML += `<span class="absolute left-2 top-1/2 -translate-y-1/2 text-emerald-600 font-extrabold">✓</span>`;
+
+                redrawSVGConnections();
+
+                if (matchedPairsCount === 3) {
+                    isLocked = true;
+                    handleCorrectAnswer();
+                }
+            } else {
+                // Wrong match
+                playSound('wrong');
+                showWrongToast("Chưa đúng rồi! Em thử lại nhé!");
+                
+                // Animate wrong temporary line or shake
+                const nodeA = document.querySelector(`.col-a-item-${leftIdx}`);
+                const nodeB = document.querySelector(`.col-b-item-${rightIdx}`);
+                nodeA.classList.add('animate-shake', 'bg-pink-100');
+                nodeB.classList.add('animate-shake', 'bg-pink-100');
+                setTimeout(() => {
+                    nodeA.classList.remove('animate-shake', 'bg-pink-100');
+                    nodeB.classList.remove('animate-shake', 'bg-pink-100');
+                }, 800);
+            }
+        }
+
+        function redrawSVGConnections() {
+            const svg = document.getElementById('connection-svg');
+            if (!svg) return;
+
+            const svgRect = svg.getBoundingClientRect();
+            let html = '';
+
+            // Draw permanent connections
+            for (const [leftIdx, rightIdx] of Object.entries(activeConnections)) {
+                const pointA = document.querySelector(`.col-a-item-${leftIdx} .connection-point-a`);
+                const pointB = document.querySelector(`.col-b-item-${rightIdx} .connection-point-b`);
+                if (pointA && pointB) {
+                    const rectA = pointA.getBoundingClientRect();
+                    const rectB = pointB.getBoundingClientRect();
+                    const x1 = rectA.left + rectA.width / 2 - svgRect.left;
+                    const y1 = rectA.top + rectA.height / 2 - svgRect.top;
+                    const x2 = rectB.left + rectB.width / 2 - svgRect.left;
+                    const y2 = rectB.top + rectB.height / 2 - svgRect.top;
+
+                    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#4ADE80" stroke-width="5" stroke-linecap="round" />`;
+                }
+            }
+
+            // Draw temp drag connection
+            if (tempConnection) {
+                const pointA = document.querySelector(`.col-a-item-${selectedLeftNode} .connection-point-a`);
+                if (pointA) {
+                    const rectA = pointA.getBoundingClientRect();
+                    const x1 = rectA.left + rectA.width / 2 - svgRect.left;
+                    const y1 = rectA.top + rectA.height / 2 - svgRect.top;
+                    html += `<line x1="${x1}" y1="${y1}" x2="${tempConnection.currentX}" y2="${tempConnection.currentY}" stroke="#FB923C" stroke-width="4" stroke-dasharray="5,5" stroke-linecap="round" />`;
+                }
+            }
+
+            svg.innerHTML = html;
+        }
+
+        function handleChoiceAnswer(selectedOpt, btnElement) {
+            if (isLocked) return;
+            const q = questions[currentQuestionIndex];
+
+            if (selectedOpt === q.answer) {
+                isLocked = true;
+                btnElement.classList.add('bg-cuteMint', 'ring-4', 'ring-emerald-500', 'scale-105');
+                handleCorrectAnswer();
+            } else {
+                playSound('wrong');
+                btnElement.classList.add('animate-shake', 'bg-pink-200');
+                showWrongToast();
+                updateMascot('wrong', '💡 Chưa đúng rồi! Em thử chọn đáp án khác xem sao nhé!');
+                setTimeout(() => {
+                    btnElement.classList.remove('animate-shake', 'bg-pink-200');
+                }, 800);
+            }
+        }
+
+        function handleCorrectAnswer() {
+            playSound('correct');
+            score += 1;
+            stars += 1;
+            
+            // Score & Star animation
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.textContent = score;
+            scoreDisplay.classList.add('scale-125', 'text-cuteOrange');
+            setTimeout(() => scoreDisplay.classList.remove('scale-125', 'text-cuteOrange'), 300);
+
+            document.getElementById('star-display').textContent = stars;
+
+            updateMascot('correct', '🎉 Giỏi lắm! Em đã trả lời chính xác! (+1 ⭐)');
+            showSuccessPopup();
+
+            setTimeout(() => {
+                hideSuccessPopup();
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                } else {
+                    showCompletionModal();
+                }
+            }, 1200);
+        }
+
+        function showSuccessPopup() {
+            document.getElementById('success-popup').classList.remove('hidden');
+        }
+
+        function hideSuccessPopup() {
+            document.getElementById('success-popup').classList.add('hidden');
+        }
+
+        function showWrongToast(customMsg) {
+            playSound('wrong');
+            const toast = document.getElementById('wrong-toast');
+            if (customMsg) {
+                toast.innerHTML = `<span>💡</span> <span>${customMsg}</span>`;
+            } else {
+                toast.innerHTML = `<span>💡</span> <span>Chưa đúng rồi! Em thử lại nhé!</span>`;
+            }
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 1200);
+        }
+
+        function updateMascot(status, text) {
+            const avatar = document.getElementById('mascot-avatar');
+            const headerMascot = document.getElementById('header-mascot');
+            const speech = document.getElementById('mascot-speech');
+            if (speech) speech.textContent = text;
+
+            if (status === 'correct') {
+                if (avatar) {
+                    avatar.textContent = '😸';
+                    avatar.className = 'text-3xl bg-cuteMint w-12 h-12 rounded-xl border-2 border-cuteDark flex items-center justify-center flex-shrink-0 animate-bounce';
+                }
+                if (headerMascot) headerMascot.textContent = '😸';
+            } else if (status === 'wrong') {
+                if (avatar) {
+                    avatar.textContent = '🐱';
+                    avatar.className = 'text-3xl bg-cutePink w-12 h-12 rounded-xl border-2 border-cuteDark flex items-center justify-center flex-shrink-0 animate-shake';
+                }
+                if (headerMascot) headerMascot.textContent = '😿';
+            } else {
+                if (avatar) {
+                    avatar.textContent = '🐱';
+                    avatar.className = 'text-3xl bg-white w-12 h-12 rounded-xl border-2 border-cuteDark flex items-center justify-center flex-shrink-0 animate-pulse';
+                }
+                if (headerMascot) headerMascot.textContent = '🐱';
+            }
+        }
+
+        function showCompletionModal() {
+            playSound('correct');
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('stats-bar').classList.add('hidden');
+            
+            document.getElementById('final-score-num').textContent = score;
+            
+            // Trigger Confetti
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 }
+            });
+
+            let msg = "";
+            let starsRating = "⭐⭐⭐⭐⭐";
+            if (score === 10) {
+                msg = "🌟 Xuất sắc! Em đã hoàn thành thật tuyệt vời!";
+                starsRating = "⭐⭐⭐⭐⭐";
+            } else if (score >= 8) {
+                msg = "🎉 Rất tốt! Em đã làm bài rất chăm chỉ!";
+                starsRating = "⭐⭐⭐⭐";
+            } else if (score >= 6) {
+                msg = "👏 Tốt lắm! Em hãy tiếp tục luyện tập nhé!";
+                starsRating = "⭐⭐⭐";
+            } else {
+                msg = "💪 Em đã rất cố gắng! Hãy ôn tập thêm và thử lại nhé!";
+                starsRating = "⭐⭐";
+            }
+
+            document.getElementById('result-feedback-msg').textContent = msg;
+            document.getElementById('star-rating').textContent = starsRating;
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+
+        function restartQuiz() {
+            playSound('click');
+            currentQuestionIndex = 0;
+            score = 0;
+            stars = 0;
+            isLocked = false;
+            document.getElementById('result-modal').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+        }
+
+        function reviewAnswers() {
+            document.getElementById('result-modal').classList.add('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            stars = 0;
+            isLocked = false;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('stats-bar').classList.remove('hidden');
+            loadQuestion();
+        }
+    </script>
+</body>
+</html>
